@@ -1,6 +1,6 @@
 """
 Guarda la información del estado del inventario
-El inventario es actualmente un 8x8, las letras representan el objeto
+El inventario es actualmente un 5x4, las letras representan el objeto
 "--" representa espacio vacío
 """
 
@@ -9,19 +9,30 @@ El inventario es actualmente un 8x8, las letras representan el objeto
 class Masterinventario():
     def __init__(self):
         self.inventario = [
-            ["guardian", "--", "--", "--", "defensor", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "rodela", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "aegis", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
-            ["--", "--", "--", "--", "--", "--", "--", "--"],
+            ["guardian", "--", "--", "--", "defensor"],
+            ["--", "--", "--", "--", "--"],
+            ["--", "rodela", "--", "--", "--"],
+            ["--", "--", "--", "aegis", "--"],
+            ["--"]
+        ]
+
+        self.equipados = [
+            ["--", "--"],
+            ["aegis", "--"]
         ]
 
     def Mueveobjeto(self, movimiento):
         self.inventario[movimiento.desdefila][movimiento.desdecolumna] = self.inventario[movimiento.haciafila][movimiento.haciacolumna]
         self.inventario[movimiento.haciafila][movimiento.haciacolumna] = movimiento.mueveobjeto
+
+    def Eliminaobjeto(self, papelera):
+        self.inventario[papelera.desdefila][papelera.desdecolumna] = self.inventario[papelera.haciafila][papelera.haciacolumna]
+        self.inventario[papelera.haciafila][papelera.haciacolumna] = papelera.mueveobjeto
+        print(self.inventario[4])
+        print ("eliminado")
+        self.inventario[4] = ["--"]
+
+
 
 class Movimiento():
     def __init__(self, desdecasilla, haciacasilla, inventario):
@@ -30,3 +41,14 @@ class Movimiento():
         self.haciafila = haciacasilla[0]
         self.haciacolumna = haciacasilla[1]
         self.mueveobjeto = inventario[self.desdefila][self.desdecolumna]
+
+
+class Papelera():
+    def __init__(self, desdecasilla, inventario):
+        self.desdefila = desdecasilla[0]
+        self.desdecolumna = desdecasilla[1]
+        self.haciafila = 4
+        self.haciacolumna = 0
+        self.mueveobjeto = inventario[self.desdefila][self.desdecolumna]
+
+
