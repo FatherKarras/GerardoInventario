@@ -2,6 +2,8 @@ import pygame
 from InventarioEngine import Masterinventario
 from InventarioEngine import Movimiento
 from InventarioEngine import Papelera
+from InventarioEngine import Activadorcasilla
+
 fps = 30
 Iconos = {}
 
@@ -22,8 +24,8 @@ def Cargadordeimagenes():
 def main():
     pygame.init()
     ventana = pygame.display.set_mode((ancho, alto))
-    surface1 = pygame.Surface((500,400))
-    surface2 = pygame.Surface((100,100))
+    surface1 = pygame.Surface((500, 400))
+    surface2 = pygame.Surface((100, 100))
     reloj = pygame.time.Clock()
     ventana.fill(pygame.Color("white"))
     surface2.fill("white")
@@ -50,52 +52,72 @@ def main():
                     else:
                         casillaseleccionada = (fila, columna)
                         clicks.append(casillaseleccionada)
-                        # añadimos a la lista los clicks hasta que len(clicks) == 2 y entonces hace el movimiento
+                        activacasilla = Activadorcasilla(clicks[0], inventario.casillas)
+                        inventario.Pulsacasilla(activacasilla)
 
                     if len(clicks) == 2:
                         movimiento = Movimiento(clicks[0], clicks[1], inventario.inventario)
                         inventario.Mueveobjeto(movimiento)
+                        desactivacasilla = Activadorcasilla(clicks[0], inventario.casillas)
+                        inventario.Despulsacasilla(desactivacasilla)
                         casillaseleccionada = ()
                         clicks = []
                         print(inventario.inventario)
+
                 elif columna == 6 and fila == 6:
                     if len(clicks) == 0:
                         casillaseleccionada = ()
                         clicks = []
                     if len(clicks) == 1:
                         print("papelera")
+                        desactivacasilla = Activadorcasilla(clicks[0], inventario.casillas)
+                        inventario.Despulsacasilla(desactivacasilla)
                         papelera = Papelera(clicks[0], inventario.inventario)
                         inventario.Eliminaobjeto(papelera)
                         casillaseleccionada = ()
                         clicks = []
 
-
                 else:
-                     casillaseleccionada = ()
-                     clicks = []
+                    if len(clicks) == 0:
+                         casillaseleccionada = ()
+                         clicks = []
+                    if len(clicks) == 1:
+                        desactivacasilla = Activadorcasilla(clicks[0], inventario.casillas)
+                        inventario.Despulsacasilla(desactivacasilla)
+                        casillaseleccionada = ()
+                        clicks = []
 
 
-        ventana.blit(surface1,(0, 0))
-        ventana.blit(surface2,(600, 600))
+        ventana.blit(surface1, (0, 0))
+        ventana.blit(surface2, (600, 600))
         reloj.tick(fps)
-        Pintado(surface1, surface2, inventario.inventario)
+        Pintado(surface1, surface2, inventario.inventario, inventario.casillas)
         pygame.display.flip()
 
 
-def Pintado(surface1, surface2, inventario):
-    Pintadorejilla(surface1)
+def Pintado(surface1, surface2, inventario, casillas):
+    Pintadorejilla(surface1, casillas)
     Pintadoobjetos(surface1, inventario)
     Pintadoiconos(surface2)
 
-def Pintadorejilla(surface1):
-    color = ("gray")
+
+
+def Pintadorejilla(surface1, inventario):
     for r in range(filas):
         for c in range(columnas):
-            pygame.draw.rect(surface1, color, pygame.Rect(c*tamano_cuadricula, r*tamano_cuadricula, tamano_cuadricula-5,
+            casilla = inventario[r][c]
+            if casilla == "--":
+                pygame.draw.rect(surface1, ("gray"), pygame.Rect(c*tamano_cuadricula, r*tamano_cuadricula, tamano_cuadricula-5,
                                                          tamano_cuadricula-5))
+            if casilla == "green":
+                pygame.draw.rect(surface1, ("green"), pygame.Rect(c * tamano_cuadricula, r * tamano_cuadricula, tamano_cuadricula - 5,
+                                             tamano_cuadricula - 5))
+
 
 def Pintadoiconos(surface2):
     surface2.blit(papeleraimagen, pygame.Rect(0, 0, tamano_cuadricula, tamano_cuadricula))
+
+
 def Pintadoobjetos(surface1, inventario):
     for r in range(filas):
         for c in range(columnas):
